@@ -4,13 +4,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-struct computer
-{
-    char name[50];
-    int n_disk;
-    char disk[100];
-};
-
 int main()
 {
     int client = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

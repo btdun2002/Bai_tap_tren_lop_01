@@ -6,13 +6,6 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-struct computer
-{
-    char name[50];
-    int n_disk;
-    char disk[100];
-};
-
 int main()
 {
     int listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -44,7 +37,6 @@ int main()
     printf("Accepted socket %d from IP: %s:%d", client, inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
     char buf[256];
-    struct computer my_computer;
     int recv_bytes;
     char ack_msg[256];
     memset(buf, 0, sizeof(buf));
@@ -54,14 +46,21 @@ int main()
         perror("recv()failed");
         return 1;
     }
-    while (1)
+    buf[recv_bytes] = 0;
+    printf("%d bytes received\b", recv_bytes);
+
+    int pos = 0;
+    char computer_name[64];
+    strcpy(computer_name, buf);
+    pos = strlen(computer_name) + 1;
+    int num_drives = (recv_bytes - pos) + 1;
+    int num_drives = (recv_bytes - pos) / 3;
+    for (int i = 0; i < num_drives; i++)
     {
-        memset(buf, 0, sizeof(buf));
-        recv_bytes = recv(client, buf, sizeof(buf), 0);
-        if (recv_bytes == -1)
-        {
-            perror("recv()failed");
-            return 1;
-        }
+        char drive_letter = buf[pos];
+        pos++;
+        unsigned short drive_size;
+        memcpy(&drive_size, buf + pos, sizeof(drive_size));
+        pos += sizeof(drive_size);
     }
 }
